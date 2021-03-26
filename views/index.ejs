@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+  <title>
+    Autocompletar
+  </title>
+  <link rel='stylesheet' href='/stylesheets/main.css' />
+
+  <!-- BOOTSTRAP -->
+  <link rel="stylesheet" href='/stylesheets/bootstrap.min.css' />
+
+  <!-- FONT AWESOME -->
+  <link rel="stylesheet" href='/fontawesome/css/fontawesome.css'>
+  <link rel="stylesheet" href='/fontawesome/css/brands.css'>
+  <link rel="stylesheet" href='/fontawesome/css/solid.css'>
+
+  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+  <!--Let browser know website is optimized for mobile-->
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+</head>
+
+<body>
+  <div class="jumbotron">
+    <div class="container mt-5">
+      <div class="row">
+        <div class="col-md-6 m-auto">
+          <h3 class="text-center mb-3"><i class="fab fa-node"></i> BÚSQUEDA DE PALABRAS</h3>
+          <div class="form-group">
+
+            <form action="#" autocomplete="off" method="POST">
+              <div class="autocompletar">
+                <input type="text" name="tipo-palabra" id="tipo-palabra" class="form-control form-control-ig"
+                  placeholder="Busca una palabra...">
+                <i class="fas fa-search" aria-hidden="true"></i>
+                <br><br>
+              </div>
+            </form>
+
+            <button type="button" class="btn btn-primary btn-lg btn-block" id="btnTraducir"><i
+                class="fas fa-search"></i> TRADUCIR</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <br><br>
+
+    <p class="lead"><i class="fas fa-address-card"></i> Alan Francisco Mora.</p>
+  </div>
+
+  <div class="row invisible" id="card-row">
+    <div class="col-md-6 m-auto">
+      <h3 class="text-center mb-3" id="card-palabra"> PALABRA</h3>
+
+      <div class="card-content white-text">
+        <p class="lead" id="card-traduccion"><i class="fas fa-angle-right"></i> Traducción</p>
+      </div>
+    </div>
+  </div>
+
+  <script src="/javascripts/main.js"></script>
+
+</body>
+
+<script type="text/javascript">
+  $(document).ready(function () {
+
+    console.log("Listo con el JQuery");
+    // $('#tipo-palabra').on('input', function (event) {
+
+    //   console.log($('#tipo-palabra').val());
+
+    //   var jq = $.get("/buscarPalabra", { palabra: $('#tipo-palabra').val() }, function (data) {
+        
+    //   });
+        
+    // });
+
+    $('#btnTraducir').on('click', function (event) {
+      console.log("Click on Validar!");
+      console.log($('#tipo-palabra').val());
+      var jqxhr = $.get("/traducir", { palabra: $('#tipo-palabra').val() }, function () {
+        console.log("success");
+        $("#card-row").removeClass("invisible");
+
+        result = jqxhr.responseJSON;
+        if (result.wordStatus == "Found") {
+          console.log("Traducida:", result.translated);
+          $("#card-palabra").html($('#tipo-palabra').val().toUpperCase());
+          $("#card-traduccion").html("");
+          var i = 0;
+          result.translated.forEach((item) => {
+            i++;
+            console.log(item);
+            $("#card-traduccion").html($("#card-traduccion").html() + '<div class="card-content white-text"><p class="lead" id="card-palabra"><i class="fas fa-angle-right"></i> ' + item + '</p></div>');
+          })
+        } else {
+          $("#card-palabra").html($('#tipo-palabra').val().toUpperCase());
+          $("#card-traduccion").html("Traducción no encontrada");
+        }
+      })
+        .fail(function () {
+          result = jqxhr.responseJSON;
+          console.log("error:", result.resp);
+        });
+    });
+  });
+</script>
+
+</html>
